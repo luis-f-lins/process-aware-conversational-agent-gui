@@ -33,17 +33,24 @@
     <CRow>
     </CRow>
     <center>
+  <div id="chat-container"></div>
+
  <div v-if="openChatTrip || openChatWedding" id="chat">
   <div id="messages-window">
     <span v-bind:class="'message ' + (message.user_id==1 ? 'ours' : 'theirs')" v-for="message in messages">{{message.content}}</span>
   </div>
   <input type="text" v-model="newMessageContent" v-on:keyup.enter="addMessage"/>
+  <!-- <div class="chat-container"></div> -->
+  <!-- <chat-widget :initPayload="'/get_started'" :socketUrl="'http://localhost:5500'" :socketPath="'/socket.io/'" :title="'Title'" :embedded="true" /> -->
 </div>
 </center> 
   </div>
 </template>
 
 <script>
+import Widget from 'rasa-webchat';
+import VueScriptComponent from 'vue-script-component'
+
 export default {
   name: 'Dashboard',
   components: {
@@ -61,6 +68,35 @@ export default {
       ]
     }
   },
+  mounted () {
+            //     let parent = document.getElementById("chat-container")
+            // parent.appendChild(document.getElementById("rasaWebchatPro"))
+  },
+  watch: {
+    // openChatTrip: function (val) {
+    //   if (!document.getElementById("rasaWebchatPro")) {
+    //     return
+    //   }
+    //   if ((this.openChatTrip || this.openChatWedding)) {
+    //     document.getElementById("rasaWebchatPro").display = 'block'
+    //   }
+    //   else {
+    //     document.getElementById("rasaWebchatPro").display = 'none'
+    //   }
+    // },
+    // openChatWedding: function (val) {
+    //   if (!document.getElementById("rasaWebchatPro")) {
+    //     return
+    //   }
+    //   if (this.openChatTrip || this.openChatWedding) {
+    //     document.getElementById("rasaWebchatPro").display = 'block'
+    //   }
+    //   else {
+    //     document.getElementById("rasaWebchatPro").display = 'none'
+    //   }
+    // }
+  },
+
   methods: {
     addMessage: function() {
       // 'this' refers to 'app'.
@@ -83,9 +119,11 @@ export default {
       this.openChatWedding = true
      }
     }
-  }
+  },
+  components: { 'chat-widget': Widget, VueScriptComponent },
 }
 </script>
+  
 <style>
 #chat {
   height: 100%;

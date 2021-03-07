@@ -1,0 +1,3 @@
+[submodule "trip-planning"]
+	path = trip-planning
+	url = git@github.com:luis-f-lins/process-aware-conversational-agent.git
