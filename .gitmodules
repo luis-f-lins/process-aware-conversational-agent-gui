@@ -1,3 +1,6 @@
 [submodule "trip-planning"]
 	path = trip-planning
 	url = git@github.com:luis-f-lins/process-aware-conversational-agent.git
+[submodule "wedding-planning"]
+	path = wedding-planning
+	url = git@github.com:luis-f-lins/rasa-wedding-updated.git

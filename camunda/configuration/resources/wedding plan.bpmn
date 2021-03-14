@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0vy617o" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.4.1">
+  <bpmn:process id="wedding_planning" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_14ibw8p</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="choose_date" name="Choose date" camunda:formKey="ask_wedding_date">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="chosenDate" label="What is the wedding date?" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_14ibw8p</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1fvc9ns</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="book_band" name="Book band">
+      <bpmn:incoming>SequenceFlow_07jml1v</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_06safu6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_1pckwqd">
+      <bpmn:incoming>SequenceFlow_0an5hs1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0an5hs1" sourceRef="finish_booking" targetRef="EndEvent_1pckwqd" />
+    <bpmn:sequenceFlow id="SequenceFlow_14ibw8p" sourceRef="StartEvent_1" targetRef="choose_date" />
+    <bpmn:sequenceFlow id="SequenceFlow_1fvc9ns" sourceRef="choose_date" targetRef="ExclusiveGateway_096xg1f" />
+    <bpmn:sequenceFlow id="SequenceFlow_06safu6" sourceRef="book_band" targetRef="ExclusiveGateway_0x3vxu8" />
+    <bpmn:sequenceFlow id="SequenceFlow_07jml1v" sourceRef="ExclusiveGateway_096xg1f" targetRef="book_band" />
+    <bpmn:sequenceFlow id="SequenceFlow_1pxryux" sourceRef="ExclusiveGateway_0x3vxu8" targetRef="finish_booking" />
+    <bpmn:userTask id="book_photographer" name="Book photographer">
+      <bpmn:incoming>SequenceFlow_1w89yur</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ls92jx</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="book_caterer" name="Book caterer">
+      <bpmn:incoming>SequenceFlow_17b46r1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1hq46fq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="book_venue" name="Book venue">
+      <bpmn:incoming>SequenceFlow_0041c8x</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0uv7h1h</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1w89yur" sourceRef="ExclusiveGateway_096xg1f" targetRef="book_photographer" />
+    <bpmn:sequenceFlow id="SequenceFlow_17b46r1" sourceRef="ExclusiveGateway_096xg1f" targetRef="book_caterer" />
+    <bpmn:sequenceFlow id="SequenceFlow_0041c8x" sourceRef="ExclusiveGateway_096xg1f" targetRef="book_venue" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ls92jx" sourceRef="book_photographer" targetRef="ExclusiveGateway_0x3vxu8" />
+    <bpmn:sequenceFlow id="SequenceFlow_1hq46fq" sourceRef="book_caterer" targetRef="ExclusiveGateway_0x3vxu8" />
+    <bpmn:sequenceFlow id="SequenceFlow_0uv7h1h" sourceRef="book_venue" targetRef="ExclusiveGateway_0x3vxu8" />
+    <bpmn:serviceTask id="finish_booking" name="Finish booking" camunda:expression="a = a">
+      <bpmn:incoming>SequenceFlow_1pxryux</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0an5hs1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:parallelGateway id="ExclusiveGateway_096xg1f">
+      <bpmn:incoming>SequenceFlow_1fvc9ns</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07jml1v</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1w89yur</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_17b46r1</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0041c8x</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="ExclusiveGateway_0x3vxu8">
+      <bpmn:incoming>SequenceFlow_06safu6</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1ls92jx</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1hq46fq</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0uv7h1h</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1pxryux</bpmn:outgoing>
+    </bpmn:parallelGateway>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="wedding_planning">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="159" y="259" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0t4vt3b_di" bpmnElement="choose_date">
+        <dc:Bounds x="270" y="237" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0v3cm6c_di" bpmnElement="book_band">
+        <dc:Bounds x="550" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1pckwqd_di" bpmnElement="EndEvent_1pckwqd">
+        <dc:Bounds x="1062" y="259" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0an5hs1_di" bpmnElement="SequenceFlow_0an5hs1">
+        <di:waypoint x="980" y="277" />
+        <di:waypoint x="1062" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_14ibw8p_di" bpmnElement="SequenceFlow_14ibw8p">
+        <di:waypoint x="195" y="277" />
+        <di:waypoint x="270" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1fvc9ns_di" bpmnElement="SequenceFlow_1fvc9ns">
+        <di:waypoint x="370" y="277" />
+        <di:waypoint x="445" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_06safu6_di" bpmnElement="SequenceFlow_06safu6">
+        <di:waypoint x="650" y="120" />
+        <di:waypoint x="740" y="120" />
+        <di:waypoint x="740" y="252" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_07jml1v_di" bpmnElement="SequenceFlow_07jml1v">
+        <di:waypoint x="470" y="252" />
+        <di:waypoint x="470" y="120" />
+        <di:waypoint x="550" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1pxryux_di" bpmnElement="SequenceFlow_1pxryux">
+        <di:waypoint x="765" y="277" />
+        <di:waypoint x="880" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_04snu1s_di" bpmnElement="book_photographer">
+        <dc:Bounds x="550" y="237" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_15iv5xn_di" bpmnElement="book_caterer">
+        <dc:Bounds x="550" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1j16i55_di" bpmnElement="book_venue">
+        <dc:Bounds x="550" y="560" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1w89yur_di" bpmnElement="SequenceFlow_1w89yur">
+        <di:waypoint x="495" y="277" />
+        <di:waypoint x="550" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_17b46r1_di" bpmnElement="SequenceFlow_17b46r1">
+        <di:waypoint x="470" y="302" />
+        <di:waypoint x="470" y="440" />
+        <di:waypoint x="550" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0041c8x_di" bpmnElement="SequenceFlow_0041c8x">
+        <di:waypoint x="470" y="302" />
+        <di:waypoint x="470" y="600" />
+        <di:waypoint x="550" y="600" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ls92jx_di" bpmnElement="SequenceFlow_1ls92jx">
+        <di:waypoint x="650" y="277" />
+        <di:waypoint x="715" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1hq46fq_di" bpmnElement="SequenceFlow_1hq46fq">
+        <di:waypoint x="650" y="440" />
+        <di:waypoint x="740" y="440" />
+        <di:waypoint x="740" y="302" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0uv7h1h_di" bpmnElement="SequenceFlow_0uv7h1h">
+        <di:waypoint x="650" y="600" />
+        <di:waypoint x="740" y="600" />
+        <di:waypoint x="740" y="302" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1n2b6p8_di" bpmnElement="finish_booking">
+        <dc:Bounds x="880" y="237" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ParallelGateway_0vkm75g_di" bpmnElement="ExclusiveGateway_096xg1f">
+        <dc:Bounds x="445" y="252" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ParallelGateway_1iux63m_di" bpmnElement="ExclusiveGateway_0x3vxu8">
+        <dc:Bounds x="715" y="252" width="50" height="50" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

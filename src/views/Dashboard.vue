@@ -33,15 +33,14 @@
     <CRow>
     </CRow>
     <center>
-  <div id="chat-container"></div>
 
  <div v-if="openChatTrip || openChatWedding" id="chat">
   <div id="messages-window">
-    <span v-bind:class="'message ' + (message.user_id==1 ? 'ours' : 'theirs')" v-for="message in messages">{{message.content}}</span>
+    <span v-bind:class="'message ' + (message.user_id==1 ? 'ours' : 'theirs')" v-for="message in messages">
+      {{message.content}}
+      </span>
   </div>
   <input type="text" v-model="newMessageContent" v-on:keyup.enter="addMessage"/>
-  <!-- <div class="chat-container"></div> -->
-  <!-- <chat-widget :initPayload="'/get_started'" :socketUrl="'http://localhost:5500'" :socketPath="'/socket.io/'" :title="'Title'" :embedded="true" /> -->
 </div>
 </center> 
   </div>
@@ -50,6 +49,7 @@
 <script>
 import Widget from 'rasa-webchat';
 import VueScriptComponent from 'vue-script-component'
+import axios from 'axios'
 
 export default {
   name: 'Dashboard',
@@ -60,7 +60,9 @@ export default {
       openChatTrip: false,
       openChatWedding: false,
       newMessageContent: '',
-      messages: [{user_id: 1, content:'Hello'}, {user_id: 2, content:'This is a conversational agent'}, {user_id: 3, content:'I will help you!'}]
+      messages: [{user_id: 1, content:'Hello'}, 
+      {user_id: 2, content:'This is a conversational agent'}, 
+      {user_id: 3, content:'I will help you!'}]
      ,
       tableItems: [
       ],
@@ -69,55 +71,37 @@ export default {
     }
   },
   mounted () {
-            //     let parent = document.getElementById("chat-container")
-            // parent.appendChild(document.getElementById("rasaWebchatPro"))
   },
-  watch: {
-    // openChatTrip: function (val) {
-    //   if (!document.getElementById("rasaWebchatPro")) {
-    //     return
-    //   }
-    //   if ((this.openChatTrip || this.openChatWedding)) {
-    //     document.getElementById("rasaWebchatPro").display = 'block'
-    //   }
-    //   else {
-    //     document.getElementById("rasaWebchatPro").display = 'none'
-    //   }
-    // },
-    // openChatWedding: function (val) {
-    //   if (!document.getElementById("rasaWebchatPro")) {
-    //     return
-    //   }
-    //   if (this.openChatTrip || this.openChatWedding) {
-    //     document.getElementById("rasaWebchatPro").display = 'block'
-    //   }
-    //   else {
-    //     document.getElementById("rasaWebchatPro").display = 'none'
-    //   }
-    // }
-  },
-
   methods: {
     addMessage: function() {
       // 'this' refers to 'app'.
       this.messages.push({user_id: 1, content: this.newMessageContent});
+
+      const requestBody = {
+        sender: "Rasa",
+        message: this.newMessageContent
+      }
+
+      const port = this.openChatTrip ? 5005 : 5006
+
+      axios.post(`http://localhost:${port}/webhooks/rest/webhook`, requestBody)
+        .then(response => {
+          console.log(response)
+          console.log(response.data)
+          response.data.forEach(messageObj => {
+            this.messages.push({user_id: 2, content: messageObj.text});
+          })
+      });
+
       this.newMessageContent = '';
     },
     booktrip(){
-    if (this.openChatTrip){
-       this.openChatTrip = false
-     }
-     else{
-      this.openChatTrip = true
-     }
+       this.openChatTrip = !this.openChatTrip
+       this.openChatWedding = false
     },
     planwedding(){
-    if (this.openChatWedding){
-       this.openChatWedding = false
-     }
-     else{
-      this.openChatWedding = true
-     }
+       this.openChatWedding = !this.openChatWedding
+       this.openChatTrip = false
     }
   },
   components: { 'chat-widget': Widget, VueScriptComponent },
@@ -151,6 +135,8 @@ export default {
   margin-bottom:8px;
   border-radius:16px;
   max-width:70%;
+  text-align: left;
+  white-space: pre-wrap;
 }
 
 .ours {
