@@ -4,148 +4,192 @@
       <CCardBody>
         <CRow>
           <CCol style="text-align: center;">
-           <h4 id="traffic" class="card-title mb-0">Process-Aware Conversational Agent</h4>
-          </CCol>       
+            <h4 id="traffic" class="card-title" style="margin-top: 15px;">
+              Process-Aware Conversational Agent
+            </h4>
+          </CCol>
         </CRow>
-        <h6>
-        Millions of people execute processes every day. </br> 
-        Processes are intrinsic to our personal and professional lives, from planning a party or scheduling a trip, to hiring new employees
-        or admitting students into a University program. </br>
-        Processes are important for several reasons, including:</br>
-      <div style="margin-left:30px" >
-      1. Regulating a set of procedures for the execution of a task, so that its execution is unified among members of a large team; </br>
-      2. Facilitating the identification of the most important tasks in a list; </br>
-      3. Clarifying the dependencies between tasks, so that they can be executed in the right order;</br>
-      4. Improving efficiency, both individually and for an entire team, if applicable.</br>
-      </div>
-      </h6>
-      <div style="display: flex;
-    justify-content: space-around; ">
-       <CButton class="buttonclick" @click="booktrip" size="sm" color="primary">Book a trip</CButton>
-       <CButton class="buttonclick" @click="planwedding" size="sm" color="primary">Plan a wedding</CButton>
-       </div>
+        <h6 style="width: 70%; margin: 20px auto 40px auto;">
+          <p>
+            Processes are intrinsic to our personal and professional lives, from
+            planning a party or scheduling a trip, to hiring new employees or
+            admitting students into a University program.
+          </p>
+          <p>
+            This tool can help you easily execute processes by talking to a
+            conversational agent that will guide you throughout the execution.
+          </p>
+        </h6>
+        <div
+          style="display: flex;
+    justify-content: space-around; margin: 30px 0 20px 0;"
+        >
+          <CButton
+            class="buttonclick"
+            @click="booktrip"
+            size="sm"
+            color="primary"
+            :variant="openChatTrip ? '' : 'outline'"
+            >Book a trip</CButton
+          >
+          <CButton
+            class="buttonclick"
+            @click="planwedding"
+            size="sm"
+            color="primary"
+            :variant="openChatWedding ? '' : 'outline'"
+            >Plan a wedding</CButton
+          >
+        </div>
       </CCardBody>
-      <CCardFooter>
-        <CRow class="text-center">
-         </CRow>
-      </CCardFooter>
     </CCard>
-    <CRow>
-    </CRow>
     <center>
-
- <div v-if="openChatTrip || openChatWedding" id="chat">
-  <div id="messages-window">
-    <span v-bind:class="'message ' + (message.user_id==1 ? 'ours' : 'theirs')" v-for="message in messages">
-      {{message.content}}
-      </span>
-  </div>
-  <input type="text" v-model="newMessageContent" v-on:keyup.enter="addMessage"/>
-</div>
-</center> 
+      <div v-if="openChatTrip || openChatWedding" id="chat">
+        <div id="messages-wrapper">
+          <div id="messages-window">
+            <span
+              v-bind:class="
+                'message ' + (message.user_id == 1 ? 'ours' : 'theirs')
+              "
+              v-for="message in messages"
+            >
+              {{ message.content }}
+            </span>
+            <span v-if="loadingResponse" v-bind:class="'message theirs'">
+              <vue-loading
+                type="bubbles"
+                color="white"
+                :size="{ width: '30px', height: '20px' }"
+              ></vue-loading>
+            </span>
+          </div>
+        </div>
+        <input
+          style="margin-bottom: 50px;"
+          type="text"
+          v-model="newMessageContent"
+          v-on:keyup.enter="addMessage"
+        />
+      </div>
+    </center>
   </div>
 </template>
 
 <script>
-import Widget from 'rasa-webchat';
-import VueScriptComponent from 'vue-script-component'
-import axios from 'axios'
+import Widget from "rasa-webchat";
+import VueScriptComponent from "vue-script-component";
+import axios from "axios";
+import { VueLoading } from "vue-loading-template";
 
 export default {
-  name: 'Dashboard',
-  components: {
-  },
-  data () {
+  name: "Dashboard",
+  components: {},
+  data() {
     return {
+      loadingResponse: false,
       openChatTrip: false,
       openChatWedding: false,
-      newMessageContent: '',
-      messages: [{user_id: 1, content:'Hello'}, 
-      {user_id: 2, content:'This is a conversational agent'}, 
-      {user_id: 3, content:'I will help you!'}]
-     ,
-      tableItems: [
-      ],
-      tableFields: [
-      ]
-    }
+      newMessageContent: "",
+      tripMessages: [],
+      weddingMessages: [],
+      tableItems: [],
+      tableFields: [],
+    };
   },
-  mounted () {
+  computed: {
+    messages: function() {
+      return this.openChatTrip ? this.tripMessages : this.weddingMessages;
+    },
   },
+  mounted() {},
   methods: {
     addMessage: function() {
       // 'this' refers to 'app'.
-      this.messages.push({user_id: 1, content: this.newMessageContent});
+      this.messages.push({ user_id: 1, content: this.newMessageContent });
 
       const requestBody = {
         sender: "Rasa",
-        message: this.newMessageContent
-      }
+        message: this.newMessageContent,
+      };
 
-      const port = this.openChatTrip ? 5005 : 5006
+      const port = this.openChatTrip ? 5005 : 5006;
 
-      axios.post(`http://localhost:${port}/webhooks/rest/webhook`, requestBody)
-        .then(response => {
-          console.log(response)
-          console.log(response.data)
-          response.data.forEach(messageObj => {
-            this.messages.push({user_id: 2, content: messageObj.text});
-          })
-      });
+      const loadingIndicator = setTimeout(() => {
+        this.loadingResponse = true;
+      }, 500);
 
-      this.newMessageContent = '';
+      axios
+        .post(`http://localhost:${port}/webhooks/rest/webhook`, requestBody)
+        .then((response) => {
+          response.data.forEach((messageObj) => {
+            setTimeout(() => {
+              this.messages.push({ user_id: 2, content: messageObj.text });
+              clearTimeout(loadingIndicator);
+              this.loadingResponse = false;
+            }, 1500);
+          });
+        });
+
+      this.newMessageContent = "";
     },
-    booktrip(){
-       this.openChatTrip = !this.openChatTrip
-       this.openChatWedding = false
+    booktrip() {
+      this.openChatTrip = !this.openChatTrip;
+      this.openChatWedding = false;
     },
-    planwedding(){
-       this.openChatWedding = !this.openChatWedding
-       this.openChatTrip = false
-    }
+    planwedding() {
+      this.openChatWedding = !this.openChatWedding;
+      this.openChatTrip = false;
+    },
   },
-  components: { 'chat-widget': Widget, VueScriptComponent },
-}
+  components: { "chat-widget": Widget, VueScriptComponent, VueLoading },
+};
 </script>
-  
+
 <style>
 #chat {
   height: 100%;
-  width: 40%; 
+  width: 40%;
   overflow: hidden;
-  display: flex; 
+  display: flex;
   flex-flow: column;
 }
 
-#messages-window {
-  background:#eee; 
-  flex: 1 0 auto; 
-  display: flex; 
-  flex-direction: column; 
-  justify-content: flex-end; 
+#messages-wrapper {
   overflow: auto;
-  align-items:flex-start; 
-  padding:20px;
+  display: flex;
+  flex-direction: column-reverse;
+  height: 250px;
+}
+
+#messages-window {
+  background: #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
 }
 
 .message {
-  background:gray;
-  color:white;
-  padding:8px 12px;
-  margin-bottom:8px;
-  border-radius:16px;
-  max-width:70%;
+  background: gray;
+  color: white;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  max-width: 70%;
   text-align: left;
   white-space: pre-wrap;
 }
 
 .ours {
-  background:#321fdb;
-  align-self:flex-end;
+  background: #321fdb;
+  align-self: flex-end;
 }
 
 input {
-  padding:10px;
+  padding: 10px;
 }
 
+svg {
+  margin-top: -45px;
+}
 </style>
