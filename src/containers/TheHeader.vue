@@ -7,7 +7,7 @@
         </CHeaderNavLink>
       </CHeaderNavItem>
       <CHeaderNavItem class="px-3">
-        <CHeaderNavLink to="/" exact>
+        <CHeaderNavLink to="/about" exact>
           About
         </CHeaderNavLink>
       </CHeaderNavItem>

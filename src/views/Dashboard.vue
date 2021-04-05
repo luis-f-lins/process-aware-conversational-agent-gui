@@ -9,7 +9,9 @@
             </h4>
           </CCol>
         </CRow>
-        <h6 style="width: 70%; margin: 20px auto 40px auto;">
+        <h6
+          style="width: 50%; margin: 20px auto 40px auto; text-align: justify;"
+        >
           <p>
             Processes are intrinsic to our personal and professional lives, from
             planning a party or scheduling a trip, to hiring new employees or
