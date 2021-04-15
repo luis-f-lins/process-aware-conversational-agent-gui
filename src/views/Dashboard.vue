@@ -31,7 +31,7 @@
             @click="booktrip"
             size="sm"
             color="primary"
-            :variant="openChatTrip ? '' : 'outline'"
+            :variant="openChat.trip ? '' : 'outline'"
             >Book a trip</CButton
           >
           <CButton
@@ -39,21 +39,25 @@
             @click="planwedding"
             size="sm"
             color="primary"
-            :variant="openChatWedding ? '' : 'outline'"
+            :variant="openChat.wedding ? '' : 'outline'"
             >Plan a wedding</CButton
           >
         </div>
       </CCardBody>
     </CCard>
     <center>
-      <div v-if="openChatTrip || openChatWedding" id="chat">
+      <div
+        v-if="Object.values(openChat).some((value) => value === true)"
+        id="chat"
+      >
         <div id="messages-wrapper">
           <div id="messages-window">
             <span
               v-bind:class="
                 'message ' + (message.user_id == 1 ? 'ours' : 'theirs')
               "
-              v-for="message in messages"
+              v-for="(message, messageIndex) in messages"
+              v-bind:key="messageIndex"
             >
               {{ message.content }}
             </span>
@@ -89,8 +93,10 @@ export default {
   data() {
     return {
       loadingResponse: false,
-      openChatTrip: false,
-      openChatWedding: false,
+      openChat: {
+        trip: false,
+        wedding: false,
+      },
       newMessageContent: "",
       tripMessages: [],
       weddingMessages: [],
@@ -100,7 +106,11 @@ export default {
   },
   computed: {
     messages: function() {
-      return this.openChatTrip ? this.tripMessages : this.weddingMessages;
+      return this.openChat.trip
+        ? this.tripMessages
+        : this.openChat.wedding
+        ? this.weddingMessages
+        : [];
     },
   },
   mounted() {},
@@ -110,11 +120,15 @@ export default {
       this.messages.push({ user_id: 1, content: this.newMessageContent });
 
       const requestBody = {
-        sender: "Rasa",
+        sender: "User",
         message: this.newMessageContent,
       };
 
-      const port = this.openChatTrip ? 5005 : 5006;
+      const port = this.openChat.trip
+        ? 5005
+        : this.openChat.wedding
+        ? 5006
+        : undefined;
 
       const loadingIndicator = setTimeout(() => {
         this.loadingResponse = true;
@@ -135,12 +149,22 @@ export default {
       this.newMessageContent = "";
     },
     booktrip() {
-      this.openChatTrip = !this.openChatTrip;
-      this.openChatWedding = false;
+      Object.keys(this.openChat).forEach((key) => {
+        if (key === "trip") {
+          this.openChat[key] = !this.openChat[key];
+        } else {
+          this.openChat[key] = false;
+        }
+      });
     },
     planwedding() {
-      this.openChatWedding = !this.openChatWedding;
-      this.openChatTrip = false;
+      Object.keys(this.openChat).forEach((key) => {
+        if (key === "wedding") {
+          this.openChat[key] = !this.openChat[key];
+        } else {
+          this.openChat[key] = false;
+        }
+      });
     },
   },
   components: { "chat-widget": Widget, VueScriptComponent, VueLoading },
